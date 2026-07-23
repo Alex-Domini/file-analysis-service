@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.рус
+.env
+.idea/
+.vscode/
+data/*.db
