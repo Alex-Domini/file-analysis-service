@@ -1,7 +1,10 @@
-from fastapi import FastAPI
 from contextlib import asynccontextmanager
+from fastapi import FastAPI
+
 from app.core.base import Base
 from app.core.database import engine
+
+from app.models.file import DownloadedFile  # noqa: F401
 
 
 @asynccontextmanager
