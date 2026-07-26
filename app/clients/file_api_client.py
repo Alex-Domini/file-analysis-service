@@ -1,5 +1,7 @@
 import asyncio
 import httpx
+import zipfile
+import io
 
 from typing import Any
 from app.core.config import settings
@@ -16,6 +18,7 @@ class ExternalAPIClient:
 
     async def fetch_with_retry(
         self,
+        method: str,
         endpoint: str,
         max_attempts: int = 5,
         **kwargs: Any,
@@ -23,7 +26,11 @@ class ExternalAPIClient:
         url = f"{self.base_api_url}/{endpoint.lstrip('/')}"
 
         for attempt in range(1, max_attempts + 1):
-            response = await self.client.get(url, **kwargs)
+            response = await self.client.request(
+                method=method,
+                url=url,
+                **kwargs,
+            )
 
             if response.status_code not in (429, 403):
                 response.raise_for_status()
@@ -55,7 +62,41 @@ class ExternalAPIClient:
 
     async def get_files_names(self) -> list[str]:
         response = await self.fetch_with_retry(
+            method="GET",
             endpoint="/api/files/names",
         )
         data = response.json()
         return data.get("file_names", [])
+
+    async def download_files_zip(self, filenames: list[str]) -> list[tuple[str, str]]:
+        if not filenames:
+            return []
+
+        if len(filenames) > 3:
+            raise ValueError("API не позволяет скачивать более 3 файлов за один запрос")
+
+        response = await self.fetch_with_retry(
+            method="POST",
+            endpoint="/api/files/download",
+            json={"file_name": filenames},
+        )
+
+        extracted_files = []
+
+        with zipfile.ZipFile(io.BytesIO(response.content)) as z:
+            for name in z.namelist():
+                with z.open(name) as f:
+                    content = f.read().decode("utf-8").strip()
+                    extracted_files.append((name, content))
+        return extracted_files
+
+    async def mark_as_downloaded(self, filenames: list[str]) -> dict:
+        if not filenames:
+            return {}
+        payload = {"file_names": filenames}
+        response = await self.fetch_with_retry(
+            method="POST",
+            endpoint="/api/files/downloaded",
+            json=payload,
+        )
+        return response.json()

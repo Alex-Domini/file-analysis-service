@@ -11,8 +11,6 @@ async def get_http_client(request: Request) -> httpx.AsyncClient:
 async def get_external_api_client(
     client: httpx.AsyncClient = Depends(get_http_client),
 ) -> ExternalAPIClient:
-    http_client = ExternalAPIClient(
-        client=client,
-    )
+    http_client = ExternalAPIClient(client=client)
 
     return http_client

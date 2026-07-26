@@ -2,8 +2,8 @@ services:
   app:
     build: .
     container_name: file-analysis-app
-    # env_file:
-    #   - .env
+    env_file:
+      - .env
     ports:
       - "8001:8000"
     volumes:
