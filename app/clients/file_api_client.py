@@ -1,7 +1,6 @@
 import asyncio
 import httpx
-import zipfile
-import io
+
 
 from typing import Any
 from app.core.config import settings
@@ -68,9 +67,9 @@ class ExternalAPIClient:
         data = response.json()
         return data.get("file_names", [])
 
-    async def download_files_zip(self, filenames: list[str]) -> list[tuple[str, str]]:
+    async def download_files_zip(self, filenames: list[str]) -> bytes:
         if not filenames:
-            return []
+            return b""
 
         if len(filenames) > 3:
             raise ValueError("API не позволяет скачивать более 3 файлов за один запрос")
@@ -81,14 +80,7 @@ class ExternalAPIClient:
             json={"file_name": filenames},
         )
 
-        extracted_files = []
-
-        with zipfile.ZipFile(io.BytesIO(response.content)) as z:
-            for name in z.namelist():
-                with z.open(name) as f:
-                    content = f.read().decode("utf-8").strip()
-                    extracted_files.append((name, content))
-        return extracted_files
+        return response.content
 
     async def mark_as_downloaded(self, filenames: list[str]) -> dict:
         if not filenames:
