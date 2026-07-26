@@ -77,7 +77,7 @@ class ExternalAPIClient:
         response = await self.fetch_with_retry(
             method="POST",
             endpoint="/api/files/download",
-            json={"file_name": filenames},
+            json={"file_names": filenames},
         )
 
         return response.content

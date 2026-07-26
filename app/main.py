@@ -13,6 +13,10 @@ from app.clients.dependencies import get_external_api_client
 
 from app.core.config import settings
 
+from app.services.file_storage_service import FileStorageService
+from app.repositories.downloaded_file_repository import DownloadedFileRepository
+from app.core.database import AsyncSession, get_db
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
