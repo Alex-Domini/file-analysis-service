@@ -63,7 +63,7 @@ class FileService:
                 break
             total_downloaded += downloaded
 
-            logger.info("Total files: %s", total_downloaded)
+            logger.info("Total downloaded: %s", total_downloaded)
 
         logger.info(
             "Download finished. Total files: %s",

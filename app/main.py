@@ -16,6 +16,8 @@ from app.models.file import DownloadedFile  # noqa: F401
 
 from app.core.config import settings
 
+from app.api.routers.download import router as download_router
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -38,6 +40,9 @@ app = FastAPI(
     title="File Analysis Service",
     lifespan=lifespan,
 )
+
+
+app.include_router(download_router)
 
 
 @app.get("/health")
