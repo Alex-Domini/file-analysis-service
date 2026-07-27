@@ -1,9 +1,12 @@
 import asyncio
+import logging
 import httpx
 
 
 from typing import Any
 from app.core.config import settings
+
+logger = logging.getLogger("uvicorn.error")
 
 
 class ExternalAPIClient:
@@ -11,9 +14,11 @@ class ExternalAPIClient:
         self,
         client: httpx.AsyncClient,
         base_api_url: str = settings.BASE_API_URL,
+        request_delay: int = 2,
     ) -> None:
         self.client = client
         self.base_api_url = base_api_url
+        self.request_delay = request_delay
 
     async def fetch_with_retry(
         self,
@@ -25,6 +30,8 @@ class ExternalAPIClient:
         url = f"{self.base_api_url}/{endpoint.lstrip('/')}"
 
         for attempt in range(1, max_attempts + 1):
+            logger.info("Sending %s request to %s", method, endpoint)
+
             response = await self.client.request(
                 method=method,
                 url=url,
@@ -33,9 +40,24 @@ class ExternalAPIClient:
 
             if response.status_code not in (429, 403):
                 response.raise_for_status()
+
+                logger.info(
+                    "%s %s completed successfully",
+                    method,
+                    endpoint,
+                )
+
+                await asyncio.sleep(self.request_delay)
+
                 return response
 
             if attempt == max_attempts:
+                logger.error(
+                    "%s %s failed after %s attempts",
+                    method,
+                    endpoint,
+                    max_attempts,
+                )
                 response.raise_for_status()
 
             retry_after = response.headers.get("Retry-After")
@@ -45,18 +67,19 @@ class ExternalAPIClient:
                     wait_time = int(retry_after)
                 except ValueError:
                     wait_time = 5
-
-                print(
-                    f"Код {response.status_code}. Ждем {wait_time} секунд по требованию сервера..."
-                )
-                await asyncio.sleep(wait_time)
-                continue
             else:
-                print(
-                    f"Код {response.status_code} без Retry-After. Безопасное ожидание 10 сек..."
-                )
-                await asyncio.sleep(wait_time)
-                continue
+                wait_time = 10
+
+            logger.warning(
+                "Received %s. Waiting %s seconds. Attempt %s/%s.",
+                response.status_code,
+                wait_time,
+                attempt,
+                max_attempts,
+            )
+
+            await asyncio.sleep(wait_time)
+
         return response
 
     async def get_files_names(self) -> list[str]:

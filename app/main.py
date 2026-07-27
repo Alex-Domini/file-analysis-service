@@ -6,16 +6,15 @@ from fastapi import FastAPI, Depends
 from app.core.base import Base
 from app.core.database import engine
 
-from app.models.file import DownloadedFile  # noqa: F401
+from app.api.dependencies import get_file_service
+from app.api.dependencies import get_external_api_client
+
 
 from app.clients.file_api_client import ExternalAPIClient
-from app.clients.dependencies import get_external_api_client
+from app.services.file_service import FileService
+from app.models.file import DownloadedFile  # noqa: F401
 
 from app.core.config import settings
-
-from app.services.file_storage_service import FileStorageService
-from app.repositories.downloaded_file_repository import DownloadedFileRepository
-from app.core.database import AsyncSession, get_db
 
 
 @asynccontextmanager
@@ -52,3 +51,9 @@ async def test_api(
 ) -> dict[str, list[str]]:
     files = await client.get_files_names()
     return {"fetched_names": files}
+
+
+@app.post("/test/download")
+async def download_files(service: FileService = Depends(get_file_service)):
+    downloaded = await service.download_all()
+    return {"downloaded": downloaded}

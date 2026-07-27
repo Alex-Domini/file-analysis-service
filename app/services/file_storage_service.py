@@ -9,7 +9,7 @@ class FileStorageService:
         self.files_dir = files_dir
         self.files_dir.mkdir(parents=True, exist_ok=True)
 
-    async def save_zip_files(self, archive_content: bytes) -> list:
+    async def save_files_from_zip(self, archive_content: bytes) -> list:
         saved_files = []
 
         with zipfile.ZipFile(io.BytesIO(archive_content)) as archive:
