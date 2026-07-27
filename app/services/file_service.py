@@ -4,6 +4,8 @@ from app.repositories.downloaded_file_repository import DownloadedFileRepository
 from app.services.file_storage_service import FileStorageService
 from app.clients.file_api_client import ExternalAPIClient
 
+from app.services.download_state import DownloadState
+
 logger = logging.getLogger("uvicorn.error")
 logger.setLevel(logging.INFO)
 
@@ -51,12 +53,14 @@ class FileService:
 
         return len(saved_files)
 
-    async def download_all(self) -> int:
+    async def download_all(self, state: DownloadState) -> int:
         total_downloaded = 0
 
         logger.info("Starting full download")
 
         while True:
+            if state.stop_requested:
+                break
             downloaded = await self.download_batch()
 
             if downloaded == 0:

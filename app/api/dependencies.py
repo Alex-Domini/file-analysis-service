@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.clients.file_api_client import ExternalAPIClient
 
+from app.services.file_statistics_service import FileStatisticsService
 from app.services.download_state import DownloadState
 from app.services.download_task_service import DownloadTaskService
 from app.services.file_service import FileService
@@ -56,3 +57,7 @@ async def get_file_repository(
     session: AsyncSession = Depends(get_db),
 ) -> DownloadedFileRepository:
     return DownloadedFileRepository(session)
+
+
+def get_file_statistics_service() -> FileStatisticsService:
+    return FileStatisticsService()

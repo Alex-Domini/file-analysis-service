@@ -14,6 +14,8 @@ from app.services.download_task_service import DownloadTaskService
 from app.services.file_service import FileService
 from app.services.file_storage_service import FileStorageService
 
+from app.schemas.download_status import DownloadStatusResponse
+
 
 router = APIRouter(
     prefix="/download",
@@ -68,8 +70,26 @@ async def start_download(
     return {"status": "started"}
 
 
-@router.get("/status")
+@router.get(
+    "/status",
+    response_model=DownloadStatusResponse,
+)
 async def get_download_status(
     state: DownloadState = Depends(get_download_state),
-) -> dict[str, str | int | None]:
-    return asdict(state)
+) -> DownloadStatusResponse:
+    return DownloadStatusResponse(**asdict(state))
+
+
+@router.post("/stop")
+async def stop_download(
+    state: DownloadState = Depends(get_download_state),
+) -> dict[str, str]:
+    if state.status != "running":
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Download is not running",
+        )
+
+    state.stop_requested = True
+
+    return {"status": "stop_requested"}
