@@ -17,6 +17,7 @@ from app.models.file import DownloadedFile  # noqa: F401
 from app.core.config import settings
 
 from app.api.routers.download import router as download_router
+from app.api.routers.files_router import router as files_router
 
 
 @asynccontextmanager
@@ -43,6 +44,7 @@ app = FastAPI(
 
 
 app.include_router(download_router)
+app.include_router(files_router)
 
 
 @app.get("/health")

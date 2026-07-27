@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import insert, select
+from sqlalchemy import insert, select, func
 
 from app.models.file import DownloadedFile
 
@@ -58,3 +58,40 @@ class DownloadedFileRepository:
         )
 
         return result.scalar_one_or_none()
+
+    async def get_paginated(
+        self,
+        page: int,
+        page_size: int,
+    ) -> tuple[list[DownloadedFile], int]:
+        offset = (page - 1) * page_size
+
+        files_query = (
+            select(DownloadedFile)
+            .order_by(DownloadedFile.downloaded_at.desc())
+            .offset(offset)
+            .limit(page_size)
+        )
+
+        files_result = await self.session.execute(files_query)
+        files = list(files_result.scalars().all())
+
+        count_query = select(func.count(DownloadedFile.id))
+        count_result = await self.session.execute(count_query)
+        total = count_result.scalar_one()
+
+        return files, total
+
+    async def get_by_ids(
+        self,
+        file_ids: list[int],
+    ) -> list[DownloadedFile]:
+        query = (
+            select(DownloadedFile)
+            .where(DownloadedFile.id.in_(file_ids))
+            .order_by(DownloadedFile.downloaded_at.desc())
+        )
+
+        result = await self.session.execute(query)
+
+        return list(result.scalars().all())

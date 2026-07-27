@@ -50,3 +50,9 @@ async def get_download_task_service(
         file_service=file_service,
         state=state,
     )
+
+
+async def get_file_repository(
+    session: AsyncSession = Depends(get_db),
+) -> DownloadedFileRepository:
+    return DownloadedFileRepository(session)

@@ -31,7 +31,9 @@ async def run_download_in_background(
         repository = DownloadedFileRepository(session)
 
         file_service = FileService(
-            client=external_api_client, storage=storage, repository=repository
+            client=external_api_client,
+            storage=storage,
+            repository=repository,
         )
 
         task_service = DownloadTaskService(
