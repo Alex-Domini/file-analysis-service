@@ -1,9 +1,10 @@
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    BASE_API_URL: str = "http://91.199.149.128:18001"
-    CANDIDATE_ID: str = "AlexDominiTest"
+    BASE_API_URL: str = Field(default=...)
+    CANDIDATE_ID: str = Field(default=...)
 
     model_config = SettingsConfigDict(
         env_file=".env",
