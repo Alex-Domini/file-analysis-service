@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <title>File Analysis Service</title>
+
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>File Analysis Service</h1>
+
+        <div class="buttons">
+            <button id="startButton">Скачать файлы</button>
+            <button id="stopButton">Остановить</button>
+        </div>
+
+        <div class="status">
+
+            <p>
+                <strong>Статус:</strong>
+                <span id="status">idle</span>
+            </p>
+
+            <p>
+                <strong>Начало загрузки:</strong>
+                <span id="startedAt">—</span>
+            </p>
+
+            <p>
+                <strong>Текущая загрузка:</strong>
+                <span id="currentBatch">—</span>
+            </p>
+
+            <p>
+                <strong>Скачано файлов:</strong>
+                <span id="downloadedCount">0</span>
+            </p>
+
+            <p>
+                <strong>Ошибка:</strong>
+                <span id="error">—</span>
+            </p>
+
+        </div>
+
+        <a href="/files-page">
+            <button>Список файлов</button>
+        </a>
+
+    </div>
+
+    <script src="/static/app.js"></script>
+
+</body>
+
+</html>

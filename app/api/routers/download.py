@@ -54,12 +54,18 @@ async def start_download(
 ) -> dict[str, str]:
     if state.status == "running":
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT, detail="Download is already running"
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Download is already running",
         )
 
     state.status = "running"
     state.downloaded_count = 0
+
+    state.current_batch_total = 0
+    state.current_batch_downloaded = 0
+
     state.error = None
+    state.stop_requested = False
 
     background_tasks.add_task(
         run_download_in_background,

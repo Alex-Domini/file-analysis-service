@@ -2,6 +2,7 @@ import httpx
 
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 
 from app.core.base import Base
 from app.core.database import engine
@@ -13,6 +14,7 @@ from app.core.config import settings
 
 from app.api.routers.download import router as download_router
 from app.api.routers.files_router import router as files_router
+from app.api.routers.web_router import router as web_router
 
 
 @asynccontextmanager
@@ -37,6 +39,12 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+app.mount(
+    "/static",
+    StaticFiles(directory="app/static"),
+    name="static",
+)
 
 app.include_router(download_router)
 app.include_router(files_router)
+app.include_router(web_router)
