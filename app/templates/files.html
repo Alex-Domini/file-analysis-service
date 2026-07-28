@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Скачанные файлы</title>
+
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+    <main class="container">
+        <nav>
+            <a href="/">Скачивание</a>
+            <a href="/files-page">Скачанные файлы</a>
+        </nav>
+
+        <h1>Скачанные файлы</h1>
+
+        <section>
+            <div class="selection-controls">
+                <label>
+                    <input type="checkbox" id="selectPageCheckbox">
+                    Выбрать все на странице
+                </label>
+
+                <label>
+                    <input type="checkbox" id="selectAllCheckbox">
+                    Выбрать вообще все
+                </label>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Выбор</th>
+                        <th>Имя файла</th>
+                        <th>Время скачивания</th>
+                    </tr>
+                </thead>
+
+                <tbody id="filesTableBody"></tbody>
+            </table>
+
+            <div class="pagination">
+                <button id="previousPageButton" type="button">
+                    Назад
+                </button>
+
+                <span id="paginationInfo">
+                    Страница 1 из 1
+                </span>
+
+                <button id="nextPageButton" type="button">
+                    Далее
+                </button>
+            </div>
+
+            <button id="calculateButton" type="button">
+                Произвести расчёты
+            </button>
+        </section>
+
+        <section id="statisticsSection" hidden>
+            <h2>Общая статистика</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Цифра</th>
+                        <th>Количество</th>
+                    </tr>
+                </thead>
+
+                <tbody id="totalStatisticsBody"></tbody>
+            </table>
+
+            <h2>Статистика по файлам</h2>
+
+            <div id="fileStatistics"></div>
+        </section>
+    </main>
+
+    <script src="/static/js/files.js"></script>
+
+
+</body>
+
+</html>

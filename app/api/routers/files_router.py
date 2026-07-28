@@ -4,6 +4,10 @@ from pathlib import Path
 from fastapi import APIRouter, Depends, Query, HTTPException
 from starlette import status
 
+from app.api.dependencies import get_file_service
+from app.services.file_service import FileService
+
+
 from app.schemas.file_statistics import FileStatisticsRequest
 from app.services.file_statistics_service import FileStatisticsService
 from app.repositories.downloaded_file_repository import (
@@ -93,3 +97,14 @@ async def calculate_statistics(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=str(error),
         ) from error
+
+
+@router.get("/ids")
+async def get_all_file_ids(
+    service: FileService = Depends(get_file_service),
+):
+    ids = await service.get_all_ids()
+
+    return {
+        "ids": ids,
+    }

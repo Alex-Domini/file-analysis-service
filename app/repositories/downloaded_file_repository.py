@@ -95,3 +95,8 @@ class DownloadedFileRepository:
         result = await self.session.execute(query)
 
         return list(result.scalars().all())
+
+    async def get_all_ids(self) -> list[int]:
+        result = await self.session.execute(select(DownloadedFile.id))
+
+        return list(result.scalars().all())

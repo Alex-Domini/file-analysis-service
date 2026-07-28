@@ -1,4 +1,8 @@
 import logging
+import math
+
+from app.schemas.file import PaginatedFilesResponse
+from app.schemas.file import DownloadedFileResponse
 
 from app.repositories.downloaded_file_repository import DownloadedFileRepository
 from app.services.file_storage_service import FileStorageService
@@ -81,3 +85,25 @@ class FileService:
         )
 
         return total_downloaded
+
+    async def get_paginated_files(
+        self, page: int, page_size: int
+    ) -> PaginatedFilesResponse:
+        files, total = await self.repository.get_paginated(
+            page=page, page_size=page_size
+        )
+
+        total_pages = math.ceil(total / page_size) if total > 0 else 0
+
+        file_items = [DownloadedFileResponse.model_validate(file) for file in files]
+
+        return PaginatedFilesResponse(
+            items=file_items,
+            page=page,
+            page_size=page_size,
+            total=total,
+            total_pages=total_pages,
+        )
+
+    async def get_all_ids(self) -> list[int]:
+        return await self.repository.get_all_ids()
