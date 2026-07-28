@@ -100,6 +100,19 @@ git clone https://github.com/Alex-Domini/file-analysis-service.git
 cd file-analysis-service
 ```
 
+Создать .env
+**Linux / macOS**
+
+```bash
+cp .env.example .env
+```
+
+**Windows (PowerShell)**
+
+```powershell
+Copy-Item .env.example .env
+```
+
 Запустить Docker
 
 ```bash
@@ -109,13 +122,13 @@ docker compose up --build
 После запуска приложение будет доступно по адресу
 
 ```
-http://localhost:8000
+http://localhost:8001
 ```
 
 Swagger
 
 ```
-http://localhost:8000/docs
+http://localhost:8001/docs
 ```
 
 ---
